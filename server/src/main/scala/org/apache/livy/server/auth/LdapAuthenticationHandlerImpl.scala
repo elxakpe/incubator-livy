@@ -41,6 +41,7 @@ object LdapAuthenticationHandlerImpl {
   val SECURITY_AUTHENTICATION = "simple"
   val PROVIDER_URL = "ldap.providerurl"
   val BASE_DN = "ldap.basedn"
+  val BASE_DN_KEY = "ldap.basedn.key"
   val LDAP_BIND_DOMAIN = "ldap.binddomain"
   val ENABLE_START_TLS = "ldap.enablestarttls"
 }
@@ -48,6 +49,7 @@ object LdapAuthenticationHandlerImpl {
 class LdapAuthenticationHandlerImpl extends AuthenticationHandler with Logging {
   private var ldapDomain = "null"
   private var baseDN = "null"
+  private var baseDNKey = "uid"
   private var providerUrl = "null"
   private var enableStartTls = false
   private var disableHostNameVerification = false
@@ -57,6 +59,7 @@ class LdapAuthenticationHandlerImpl extends AuthenticationHandler with Logging {
   @throws[ServletException]
   def init(config: Properties): Unit = {
     this.baseDN = config.getProperty(LdapAuthenticationHandlerImpl.BASE_DN)
+    this.baseDNKey = config.getProperty(LdapAuthenticationHandlerImpl.BASE_DN_KEY)
     this.providerUrl = config.getProperty(LdapAuthenticationHandlerImpl.PROVIDER_URL)
     this.ldapDomain = config.getProperty(LdapAuthenticationHandlerImpl.LDAP_BIND_DOMAIN)
     this.enableStartTls = config.getProperty(
@@ -128,7 +131,7 @@ class LdapAuthenticationHandlerImpl extends AuthenticationHandler with Logging {
       principle = userName + "@" + ldapDomain
     }
     val bindDN = if (baseDN != null) {
-      "uid=" + principle + "," + baseDN
+      baseDNkey + "=" + principle + "," + baseDN
     } else {
       principle
     }
